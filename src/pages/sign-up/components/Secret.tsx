@@ -1,4 +1,4 @@
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, Divider } from "antd";
 
 const Secret = () => {
   const [form] = Form.useForm();
@@ -16,6 +16,12 @@ const Secret = () => {
       onFinish={onFinish}
       layout="vertical"
     >
+      <Form.Item>
+        <Button type="primary" block ghost>
+          Create a Passkey
+        </Button>
+      </Form.Item>
+      <Divider plain>or</Divider>
       <Form.Item
         label="Password"
         name="password"
@@ -32,10 +38,6 @@ const Secret = () => {
       >
         <Input.Password />
       </Form.Item>
-      or{" "}
-      <Button type="link" size="large">
-        Use a Passkey
-      </Button>
     </Form>
   );
 };

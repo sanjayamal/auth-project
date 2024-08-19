@@ -66,14 +66,14 @@ const SignUp = () => {
   const items = steps.map((item) => ({ key: item.title, title: item.title }));
 
   const getContent = (stepId: number) => {
-    return steps[stepId].content;
+    return steps[stepId]?.content;
   };
 
   return (
     <Row
       style={{
         padding: "2rem",
-        maxWidth: stepLayout == "horizontal" ? "48%" : "100%",
+        maxWidth: stepLayout == "horizontal" ? "35%" : "90%",
         margin: "0 auto",
         display: "flex",
         justifyContent: "center",
