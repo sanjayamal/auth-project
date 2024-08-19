@@ -9,7 +9,7 @@ export const router = createBrowserRouter([
     element: <div>Home</div>,
   },
   {
-    path: "/sign-up",
+    path: "/sign-up/step/:stepId",
     element: <SignUp />,
   },
 ]);

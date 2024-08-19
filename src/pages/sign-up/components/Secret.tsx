@@ -33,7 +33,7 @@ const Secret = () => {
         <Input.Password />
       </Form.Item>
       or{" "}
-      <Button type="link" size="small">
+      <Button type="link" size="large">
         Use a Passkey
       </Button>
     </Form>
