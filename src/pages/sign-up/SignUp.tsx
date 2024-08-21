@@ -1,28 +1,16 @@
-import {
-  Form,
-  Input,
-  Button,
-  Card,
-  Flex,
-  theme,
-  message,
-  Row,
-  Col,
-  Steps,
-} from "antd";
+import { Button, Card, Row, Col, Steps } from "antd";
 import { useEffect, useRef, useState } from "react";
-import SignUpForm from "./components/SignUpForm";
-import OTP from "./components/OTP";
-import Secret from "./components/Secret";
+import { Secret, OTP, SignUpForm } from "./components";
 import { useNavigate, useParams } from "react-router-dom";
 
-const SignUp = () => {
-  const [stepLayout, setStepLayout] = useState<"horizontal" | "vertical">(
-    "horizontal"
-  );
+type Direction = "horizontal" | "vertical";
 
-  let { stepId } = useParams();
+const SignUp = () => {
+  const [stepLayout, setStepLayout] = useState<Direction>("horizontal");
+
+  const { stepId } = useParams();
   const signUpFormRef = useRef(null);
+  const secretFormRef = useRef(null);
   const navigate = useNavigate();
 
   const currentStep = Number(stepId) - 1;
@@ -41,25 +29,37 @@ const SignUp = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const handleNextStepNavigation = (stepId: number) => {
+    navigate(`sign-up/step/${stepId + 2}`);
+  };
+
   const steps = [
     {
       title: "First",
-      content: <SignUpForm ref={signUpFormRef} />,
+      content: (
+        <SignUpForm
+          ref={signUpFormRef}
+          handleNavigation={handleNextStepNavigation}
+        />
+      ),
     },
     {
       title: "Second",
-      content: <OTP />,
+      content: <OTP handleNavigation={handleNextStepNavigation} />,
     },
     {
       title: "Last",
-      content: <Secret />,
+      content: <Secret ref={secretFormRef} />,
     },
   ];
 
-  const next = () => {
-    navigate(`/sign-up/step/${currentStep + 2}`);
-    if (signUpFormRef?.current) {
+  const handleOnNext = async () => {
+    if (signUpFormRef?.current && currentStep === 0) {
       (signUpFormRef?.current as any).submit();
+    }
+
+    if (secretFormRef?.current && currentStep === 2) {
+      (secretFormRef?.current as any).submit();
     }
   };
 
@@ -85,24 +85,22 @@ const SignUp = () => {
       </Col>
       <Col className="gutter-row" xs={24} sm={18} md={24}>
         <Card style={{ minHeight: "15rem" }}>{getContent(currentStep)}</Card>
-        <Row style={{ marginTop: "1rem" }}>
-          <Col className="gutter-row" xs={6}>
-            {currentStep < steps.length - 1 && (
-              <Button type="primary" onClick={() => next()} block>
-                Next
-              </Button>
-            )}
-            {currentStep === steps.length - 1 && (
-              <Button
-                type="primary"
-                onClick={() => message.success("Processing complete!")}
-                block
-              >
-                Done
-              </Button>
-            )}
-          </Col>
-        </Row>
+        {currentStep != 1 && (
+          <Row style={{ marginTop: "1rem" }}>
+            <Col className="gutter-row" xs={6}>
+              {currentStep < steps.length - 1 && (
+                <Button type="primary" onClick={() => handleOnNext()} block>
+                  Next
+                </Button>
+              )}
+              {currentStep === steps.length - 1 && (
+                <Button type="primary" onClick={() => handleOnNext()} block>
+                  Done
+                </Button>
+              )}
+            </Col>
+          </Row>
+        )}
       </Col>
     </Row>
   );

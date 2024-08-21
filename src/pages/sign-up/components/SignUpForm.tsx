@@ -1,32 +1,68 @@
-import React, { forwardRef, useImperativeHandle } from "react";
-import { Form, Input, Button, Card } from "antd";
+import { forwardRef, useImperativeHandle } from "react";
+import { Form, Input } from "antd";
+import { useParams } from "react-router-dom";
 
-const SignUpForm = forwardRef((props, ref) => {
+interface ISignUpForm {
+  handleNavigation: (stepId: number) => void;
+}
+
+const query = /* GraphQL */ `
+  mutation AuthSignup($user: SignupInput!) {
+    authSignup(user: $user)
+  }
+`;
+
+const SignUpForm = forwardRef(({ handleNavigation }: ISignUpForm, ref) => {
   const [form] = Form.useForm();
+  const { stepId } = useParams();
+
+  const currentStep = Number(stepId) - 1;
 
   const onFinish = () => {
     const values = form.getFieldsValue();
-    console.log("Received values of form: ", values);
+
+    fetch("http://localhost:3000/graphql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        query,
+        variables: {
+          user: values,
+        },
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        handleNavigation(currentStep);
+        console.log("data returned:", data);
+      });
   };
 
   useImperativeHandle(ref, () => ({
     submit: () => {
-      onFinish();
+      form.submit();
+      form
+        .validateFields({ validateOnly: true })
+        .then(() => {
+          onFinish();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   }));
 
   return (
-    <Form
-      name="signup"
-      initialValues={{ remember: true }}
-      form={form}
-      onFinish={onFinish}
-      layout="vertical"
-    >
+    <Form name="signUp" form={form} layout="vertical">
       <Form.Item
         label="Email"
         name="email"
-        rules={[{ required: true, message: "Please input your email!" }]}
+        validateTrigger="onBlur"
+        rules={[{ required: true, message: "Please input your email" }]}
       >
         <Input />
       </Form.Item>
@@ -34,7 +70,8 @@ const SignUpForm = forwardRef((props, ref) => {
       <Form.Item
         label="Name"
         name="name"
-        rules={[{ required: true, message: "Please input your name!" }]}
+        validateTrigger="onBlur"
+        rules={[{ required: true, message: "Please input your name" }]}
       >
         <Input />
       </Form.Item>

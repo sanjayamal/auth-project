@@ -1,23 +1,64 @@
+import { forwardRef, useImperativeHandle } from "react";
 import { Form, Input, Button, Divider } from "antd";
+import { useNavigate } from "react-router-dom";
 
-const Secret = () => {
+const query = /* GraphQL */ `
+  mutation AuthPasskeyRegisterCreate {
+    authPasskeyRegisterCreateOptions
+  }
+`;
+
+type SecretType = "password" | "passkey";
+
+const Secret = forwardRef(({}, ref) => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
 
-  const onFinish = () => {
-    const values = form.getFieldsValue();
-    console.log("Received values of form: ", values);
+  const onFinish = (secretType: SecretType) => {
+    if (secretType === "passkey") {
+      handleOnSubmit(query);
+    } else {
+      const values = form.getFieldsValue();
+      form.submit();
+      form
+        .validateFields({ validateOnly: true })
+        .then(() => {
+          handleOnSubmit(query, values);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   };
+  const handleOnSubmit = (query: string, value?: any) => {
+    fetch("http://localhost:3000/graphql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        query,
+        ...(value && { value }),
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        navigate("/");
+        console.log("data returned:", data);
+      });
+  };
+  useImperativeHandle(ref, () => ({
+    submit: () => {
+      onFinish("password");
+    },
+  }));
 
   return (
-    <Form
-      name="signup"
-      initialValues={{ remember: true }}
-      form={form}
-      onFinish={onFinish}
-      layout="vertical"
-    >
+    <Form form={form} layout="vertical">
       <Form.Item>
-        <Button type="primary" block ghost>
+        <Button type="primary" block ghost onClick={() => onFinish("passkey")}>
           Create a Passkey
         </Button>
       </Form.Item>
@@ -40,6 +81,6 @@ const Secret = () => {
       </Form.Item>
     </Form>
   );
-};
+});
 
 export default Secret;
