@@ -31,6 +31,8 @@ const Secret = forwardRef(({}, ref) => {
     }
   };
   const handleOnSubmit = (query: string, value?: any) => {
+    const temToken = localStorage.getItem("tem_token");
+
     fetch("http://localhost:3000/graphql", {
       method: "POST",
       headers: {

@@ -2,6 +2,8 @@ import { Button, Card, Row, Col, Steps } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { Secret, OTP, SignUpForm } from "./components";
 import { useNavigate, useParams } from "react-router-dom";
+import BgImage from "../../assets/images/bgImage.jpg";
+import "./signUp.css";
 
 type Direction = "horizontal" | "vertical";
 
@@ -30,7 +32,7 @@ const SignUp = () => {
   }, []);
 
   const handleNextStepNavigation = (stepId: number) => {
-    navigate(`sign-up/step/${stepId + 2}`);
+    navigate(`/sign-up/step/${stepId + 2}`);
   };
 
   const steps = [
@@ -69,40 +71,59 @@ const SignUp = () => {
     return steps[stepId]?.content;
   };
 
+  const backgroundStyle = {
+    backgroundImage: `url(${BgImage})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    height: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  };
+
   return (
-    <Row
-      style={{
-        padding: "2rem",
-        maxWidth: stepLayout == "horizontal" ? "35%" : "90%",
-        margin: "0 auto",
-        display: "flex",
-        justifyContent: "center",
-      }}
-      gutter={[0, 24]}
-    >
-      <Col className="gutter-row" xs={0} sm={6} md={24}>
-        <Steps current={currentStep} items={items} direction={stepLayout} />
-      </Col>
-      <Col className="gutter-row" xs={24} sm={18} md={24}>
-        <Card style={{ minHeight: "15rem" }}>{getContent(currentStep)}</Card>
-        {currentStep != 1 && (
-          <Row style={{ marginTop: "1rem" }}>
-            <Col className="gutter-row" xs={6}>
-              {currentStep < steps.length - 1 && (
-                <Button type="primary" onClick={() => handleOnNext()} block>
-                  Next
-                </Button>
-              )}
-              {currentStep === steps.length - 1 && (
-                <Button type="primary" onClick={() => handleOnNext()} block>
-                  Done
-                </Button>
-              )}
-            </Col>
-          </Row>
-        )}
-      </Col>
-    </Row>
+    <div style={backgroundStyle}>
+      <Row
+        style={{
+          padding: "2rem",
+          maxWidth: stepLayout == "horizontal" ? "35%" : "90%",
+          margin: "0 auto",
+          display: "flex",
+          justifyContent: "center",
+        }}
+        gutter={[0, 24]}
+      >
+        <Col className="gutter-row" xs={0} sm={6} md={24}>
+          <Steps
+            current={currentStep}
+            items={items}
+            direction={stepLayout}
+            style={{ color: "white" }}
+          />
+        </Col>
+        <Col className="gutter-row" xs={24} sm={18} md={24}>
+          <Card style={{ minHeight: "15rem", opacity: "0.85" }}>
+            {getContent(currentStep)}
+          </Card>
+          {currentStep != 1 && (
+            <Row style={{ marginTop: "1rem" }}>
+              <Col className="gutter-row" xs={6}>
+                {currentStep < steps.length - 1 && (
+                  <Button type="primary" onClick={() => handleOnNext()} block>
+                    Next
+                  </Button>
+                )}
+                {currentStep === steps.length - 1 && (
+                  <Button type="primary" onClick={() => handleOnNext()} block>
+                    Done
+                  </Button>
+                )}
+              </Col>
+            </Row>
+          )}
+        </Col>
+      </Row>
+    </div>
   );
 };
 

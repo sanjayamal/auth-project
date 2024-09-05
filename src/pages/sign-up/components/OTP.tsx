@@ -10,7 +10,9 @@ interface IOTP {
 
 const query = /* GraphQL */ `
   mutation AuthVerifySignup($token: String!) {
-    authVerifySignup(token: $token)
+    authVerifySignup(token: $token) {
+      accessToken
+    }
   }
 `;
 
@@ -44,20 +46,20 @@ const OTP = ({ handleNavigation }: IOTP) => {
         credentials: "include",
         body: JSON.stringify({
           query,
-          variables: { otp: enteredOtp },
+          variables: { token: enteredOtp },
         }),
       });
 
       if (response.ok) {
         message.success("OTP verified successfully!");
+        const res = await response.json();
+        localStorage.setItem("tem_token", res.accessToken);
         handleNavigation(currentStep);
       } else {
         setAttempts(attempts + 1);
 
         if (attempts + 1 >= maxAttempts) {
-          message.error(
-            "Maximum attempts reached. Redirecting to the previous page."
-          );
+          message.error("Maximum attempts reached.");
           navigate(-1);
         } else {
           setError("Incorrect OTP. Please try again.");

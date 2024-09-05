@@ -1,0 +1,25 @@
+.ant-steps-item-title {
+  color: white !important;
+}
+
+/* Optional: Customize the step circle (dot) for non-active steps */
+.ant-steps-item-icon {
+  background-color: #cbd1d0 !important; /* Light blue */
+  border-color: #cbd1d0 !important;
+  color: white !important;
+}
+
+.ant-steps-item-process .ant-steps-item-icon {
+  background-color: #1677ff !important;
+  border-color: #1677ff !important;
+  color: white !important;
+}
+
+.ant-steps-item-finish .ant-steps-item-icon {
+  border-color: #1677ff !important;
+  color: white !important;
+}
+
+.ant-steps-item-process .ant-steps-icon {
+  color: white !important;
+}
